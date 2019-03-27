@@ -2,6 +2,9 @@ const express = require('express')
 const helmet = require('helmet')
 
 const cohortsRoutes = require('./routes/cohortsRoutes')
+
+
+
 const app = express()
 
 app.use(express.json())
