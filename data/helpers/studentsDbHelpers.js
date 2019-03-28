@@ -12,7 +12,7 @@ const get = async (id) => {
         const student = await db(tbl).where({id}).first()
         return db(tbl).join('cohorts', `${tbl}.cohort_id`, '=', 'cohorts.id')
             .select(`${tbl}.id`, `${tbl}.name`, db.ref('cohorts.name').as('cohort'))
-            .where({'students.id': id})
+            .where({[`${tbl}.id`]: id})
             .first()
     }
 }
