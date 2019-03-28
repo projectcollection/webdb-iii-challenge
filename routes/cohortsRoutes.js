@@ -1,13 +1,10 @@
 const route = require('express').Router()
-const knex = require('knex')
 
-const knexConfig = require('../knexfile').development
-
-const db = knex(knexConfig)
+const db = require('../data/helpers/cohortsDbHelpers')
 
 route.get('/', async (req, res) => {
     try{
-        const cohorts = await db('cohorts')
+        const cohorts = await db.get()
         res.status(200).json(cohorts)
     }catch (e) {
         res.status(500).json({message: 'internal server error'})
@@ -17,7 +14,7 @@ route.get('/', async (req, res) => {
 route.get('/:id', async (req, res) => {
     const {id} = req.params
     try{
-        const cohort = await db('cohorts').where({id}).first()
+        const cohort = await db.get(id)
 
         if(cohort){
             res.status(200).json(cohort)
@@ -37,8 +34,8 @@ route.post('/', async (req, res) => {
         return
     }
     try{
-        const newCohortId = await db('cohorts').insert(req.body)
-        const newCohort = await db('cohorts').where({id: newCohortId[0]})
+        const newCohortId = await db.post(req.body)
+        const newCohort = await db.get(newCohortId[0])
         res.status(201).json(newCohort)
     }catch (e) {
         res.status(500).json({message: 'internal server error'})
@@ -54,9 +51,9 @@ route.put('/:id', async (req, res) => {
         return
     }
     try{
-        const count = await db('cohorts').where({id}).update(req.body)
+        const count = await db.update(id, req.body)
         if(count > 0){
-            const updatedCohort = await db('cohorts').where({id})
+            const updatedCohort = await db.get(id)
             res.status(200).json(updatedCohort)
         }else{
             res.status(404).json({message: 'not found'})
@@ -69,7 +66,7 @@ route.put('/:id', async (req, res) => {
 route.delete('/:id', async (req, res) => {
     const {id} = req.params
     try{
-        const count = await db('cohorts').where({id}).del()
+        const count = await db.del(id)
         if(count > 0){
             res.status(200).json({message: 'successfully deleted'})
         }else{
@@ -78,7 +75,6 @@ route.delete('/:id', async (req, res) => {
     }catch (e) {
         res.status(500).json({message: 'internal server error'})
     }
-
 })
 
 module.exports = route
