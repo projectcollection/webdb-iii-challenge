@@ -62,3 +62,6 @@ typings/
 
 # VSCode settings
 .vscode/
+
+# webstorm settings
+.idea/
